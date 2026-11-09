@@ -1,0 +1,47 @@
+# ==============================================================================
+# Material Code Harmonisation Across Public Enterprises (CSE 276 CA-1)
+# Project Dependencies
+# Recommended Python version: 3.11+ (Python 3.11 is recommended for pre-built ML wheels)
+# ==============================================================================
+
+# Core Data Manipulation & Computation
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Natural Language Processing & Text Preprocessing
+regex>=2023.6.3
+nltk>=3.8.1
+rapidfuzz>=3.0.0
+
+# Machine Learning, Embeddings & Clustering
+scikit-learn>=1.3.0
+sentence-transformers>=2.2.2
+torch>=2.0.0
+transformers>=4.30.0
+networkx>=3.0
+
+# Candidate Generation & Indexing (FAISS optional for larger corpora)
+# faiss-cpu>=1.7.4  # Uncomment if dataset scaling requires FAISS vector index
+
+# Data Visualisation
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+
+# Human-in-the-Loop Reviewer Application
+streamlit>=1.30.0
+
+# Environment & Configuration Management
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
+# Testing & Quality Assurance
+pytest>=7.4.0
+
+# Interactive Notebooks & EDA
+jupyter>=1.0.0
+ipykernel>=6.25.0
+nbformat>=5.9.0
+nbclient>=0.10.0
+openpyxl>=3.1.0

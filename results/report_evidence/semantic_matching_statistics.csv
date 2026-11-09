@@ -1,0 +1,16 @@
+Metric,Value,Notes
+Transformer Model Name,sentence-transformers/all-MiniLM-L6-v2,HuggingFace pre-trained dense sentence transformer
+Embedding Vector Dimensions,384,Dense float32 representations
+Normalization Protocol,L2 Unit Sphere Normalization,Allows exact cosine similarity via dot product (u . v)
+Encoded Catalogue Items,"6,634",Serialized in models/candidate_embeddings.npy
+Candidate Pairs Evaluated,"22,464",All TF-IDF retrieved pairs scored semantically
+Pairwise Inference Latency,0.0789 seconds,Matrix dot product on precomputed normalized embeddings
+Overall Mean Cosine Similarity,0.7649,"Distribution across 22,464 pairs"
+Overall Median Cosine Similarity,0.7765,"Distribution across 22,464 pairs"
+Intra-Enterprise Mean Similarity,0.7719,Higher lexical and formatting alignment within CPSEs
+Cross-Enterprise Mean Similarity,0.6032,Reflects vocabulary gap and syntax inversions between CPSEs
+Pearson Correlation (Lexical vs Semantic),0.6800,Moderate correlation indicating complementary feature signals
+Cross-Enterprise Pearson Correlation,0.4970,Lower correlation highlights where semantic vectors capture synonyms
+Synonym Discovery: Centrifugal Pump,Semantic = 0.9616 vs Lexical = 0.4300,'CENTRIFUGAL PUMP' vs 'PUMP-CENTRIFUGAL'
+Synonym Discovery: Compressor Spares,Semantic = 0.9110 vs Lexical = 0.4810,'COMPRESSOR SPARES' vs 'SPARES FOR AIR COMPRESSOR'
+Semantic Masking Failure Mode,Semantic = 0.9945 with 250MM vs 300MM conflict,Proves necessity of rule-based specification conflict checks

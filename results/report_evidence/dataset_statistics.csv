@@ -1,0 +1,22 @@
+Metric,Value,Category,Notes
+Raw Corpus Total Records,21513,Raw Corpus,Verified in material_description_corpus.csv
+Oil India Limited (OIL) Raw,18950 (88.09%),Raw Corpus,Upstream E&P enterprise
+NTPC Limited Raw,1843 (8.57%),Raw Corpus,Thermal power utility enterprise
+Indian Oil Corporation Limited (IOCL) Raw,720 (3.35%),Raw Corpus,Downstream refinery & petrochemical enterprise
+Candidate Pool (Preprocessed),6634,Corpus Partition,"Tier 1 Discrete (923) + Tier 2 Tagged (5,711)"
+Held-Back Records,14879,Corpus Partition,"Tier 2 Untagged (14,542) + Tier 3 Admin (337)"
+Partition Verification Sum,21513 == 21513,Corpus Partition,"Mutually exclusive, collectively exhaustive (100% matched)"
+Candidate Pool OIL,5394 (81.31%),Candidate Pool,Candidate pool subset
+Candidate Pool NTPC,732 (11.03%),Candidate Pool,Candidate pool subset
+Candidate Pool IOCL,508 (7.66%),Candidate Pool,Candidate pool subset
+Total Review Candidate Pairs,150,Candidate Review,Combined review dataset (Batch 1 + Batch 2)
+Batch 1 Candidate Pairs,50,Candidate Review,4-strata targeted sampling
+Batch 2 Candidate Pairs,100,Candidate Review,9-domain expansion candidates
+Batch 1 Confirmed Positive (1),2,Annotation Status,API 6D Ball Valves under Rule 6
+Batch 1 Confirmed Negative (0),17,Annotation Status,"10 conveyor belt width conflicts, 6 service AMC, 1 bearing mismatch"
+Batch 1 Uncertain (UNCERTAIN),31,Annotation Status,Generic category descriptors lacking specifications under Rule 5
+Batch 1 Pending,0,Annotation Status,All 50 pairs evaluated in Batch 1
+Batch 2 Pending,100,Annotation Status,100% pending human review
+Total Confirmed Binary Labels,19,Training Readiness,"20 confirmed pairs (below 30 pilot, 150 production target)"
+Repeated Material IDs across Batches,11,Graph Topology,11 shared material entities acting as graph hubs across 38 pairs
+Cross-Batch Pair Overlap,0,Graph Topology,Zero duplicate candidate pairs between Batch 1 and Batch 2

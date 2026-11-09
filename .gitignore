@@ -1,0 +1,100 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebooks checkpoints & autosaves
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Environment variables & secrets
+.env
+.env.local
+*.secret
+*.pem
+*.key
+
+# Backups (never commit)
+backups/
+
+# Data files (keep raw & heavy artifacts out of Git; tracked via README / cloud storage)
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/preprocessed_materials.csv
+!data/processed/combined_candidate_pairs_150.csv
+!data/processed/candidate_pairs_batch2_expansion_100.csv
+!data/processed/improved_labelled_pairs_worksheet.csv
+data/labelled/*
+!data/labelled/.gitkeep
+!data/labelled/*.csv
+
+# Large trained models and binary weights
+models/*
+!models/.gitkeep
+!models/README.md
+!models/candidate_embeddings.npy
+!models/embedding_id_mapping.csv
+*.pkl
+*.pt
+*.pth
+*.bin
+*.onnx
+*.joblib
+!models/hybrid_er_model.joblib
+
+# Evaluation outputs & generated plots (optional caches)
+results/reports/*
+!results/reports/.gitkeep
+!results/figures/*
+!results/metrics/*
+!results/matching/*
+
+# Existing cloned workspace folders
+CSE-276-PROJECT/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
