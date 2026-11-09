@@ -1,0 +1,10 @@
+Dimension,Naive_Connected_Components,Conflict_Aware_Clustering,Operational_Significance
+Algorithm Type,Graph Transitive Closure (NetworkX),Safeguarded Greedy Graph Partitioning,Foundational clustering mechanism
+Transitive Conflict Handling,Merges (Corrupts master),Blocks Merge & Logs Event,Prevents A-B-C transitive errors (e.g. 250MM vs 300MM pipes)
+Ambiguous Pair Handling,Blindly Merges,Isolates in Singletons,Quarantines UNCERTAIN / NEEDS_REVIEW pairs
+Total Material Records Evaluated,173,173,Unique material IDs across combined 150 pairs
+Total Resulting Clusters,33,156,Safe clustering prevents artificial over-merging
+Multi-Record Harmonised Groups,23 (many oversized/corrupted),6 verified groups,High-confidence groups with zero parameter conflicts
+Singleton Isolated Clusters,10,150 (quarantined),Unverified items preserved pending human SME review
+Intra-Cluster Specification Conflicts,> 10 detected,0 (Mathematically 0),Guarantees zero technical conflicts in harmonised master
+Supervised Cluster Purity,NOT EVALUATED,NOT EVALUATED,Requires >= 150 verified ground-truth clusters; un-fabricated

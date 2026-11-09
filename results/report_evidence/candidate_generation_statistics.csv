@@ -1,0 +1,7 @@
+Method,Similarity_Cutoff,Total_Candidate_Pairs,Cross_Enterprise_Pairs,Search_Space_Reduction_Pct,Operational_Role
+Full Quadratic Comparison,None,"21,995,361","~2,400,000",0.000%,Theoretical baseline; intractable for transformer inference
+"Sparse TF-IDF Token N-Grams (1,2)",tau = 0.35,"22,464",930,99.898%,Sublinear lexical candidate blocking & retrieval
+Dense MiniLM Vector Similarity,tau = 0.60,"22,464",930,99.898%,Dense semantic cosine scoring (precomputed in 0.079s)
+Batch 1 Stratified Review Set,Multi-strata,50,40,99.9998%,"Exact (15), TF-IDF High (15), Conflict (10), Boundary (10)"
+Batch 2 Expansion Review Set,Multi-domain,100,100,99.9995%,9 critical procurement domains positive-weighted
+Combined Active Review Pool,Integrated,150,140,99.9993%,Active candidate pool for human-in-the-loop review

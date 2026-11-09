@@ -1,0 +1,14 @@
+Metric,Value,Notes
+Total Preprocessed Material Items,"6,634",Candidate pool scope
+Full Pairwise Search Space (N(N-1)/2),"21,995,361",Quadratic baseline space
+Total Exact Normalized Matches,"1,661",Descriptions matching exactly after text cleaning
+Intra-Enterprise Exact Matches,"1,646 (99.10%)",Internal line-item duplicates within same CPSE
+Cross-Enterprise Exact Matches,15 (0.90%),Exact string matches bridging different CPSEs
+Exact Search Space Coverage,0.00755%,Proportion of quadratic space covered by exact match
+Cross-Enterprise Candidate Recall,1.61%,15 exact out of 930 cross-enterprise candidate pairs (< 2%)
+Exact Match Precision (Specific Standards),High,"Exact matches on standards (e.g. Hot plate stirrer, XLPE cable)"
+Exact Match Precision (Generic Titles),False Positive,"Exact matches on generic titles (Air Compressor, Bearings) lack operational specs"
+Supervised Model Accuracy,NOT EVALUATED,Supervised model training locked; no fabricated metrics
+Supervised Model Precision,NOT EVALUATED,Supervised model training locked; no fabricated metrics
+Supervised Model Recall,NOT EVALUATED,Supervised model training locked; no fabricated metrics
+Supervised Model F1-Score,NOT EVALUATED,Supervised model training locked; no fabricated metrics
