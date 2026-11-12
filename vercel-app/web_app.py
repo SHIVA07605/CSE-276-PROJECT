@@ -45,6 +45,8 @@ from src.preprocessing.text_cleaner import normalise_text  # noqa: E402
 
 DEFAULT_PORT = 8060
 INDEX_HTML = PROJECT_ROOT / "web" / "index.html"
+if not INDEX_HTML.exists():
+    INDEX_HTML = PROJECT_ROOT / "index.html"
 MAX_BODY_BYTES = 16_384
 MAX_TEXT_CHARS = 1_000
 SHORTLIST_PER_SIGNAL = 50

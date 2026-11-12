@@ -21,6 +21,7 @@ OUT = ROOT / "vercel-app"
 COPY = {
     "web_app.py": "web_app.py",
     "src": "src",
+    "web": "web",
     "web/index.html": "index.html",              # served statically at /
     "models/hybrid_er_model.joblib": "models/hybrid_er_model.joblib",
     "models/candidate_embeddings.npy": "models/candidate_embeddings.npy",
@@ -46,6 +47,13 @@ def main() -> None:
     if missing:
         sys.exit(f"[ERROR] Missing: {missing}. Train the model (python train_er_model.py) and export the encoder "
                  f"(python deploy/vercel/export_minilm_numpy.py) first.")
+    saved_vercel = OUT / ".vercel"
+    temp_vercel = None
+    if saved_vercel.exists():
+        import tempfile
+        temp_dir = Path(tempfile.mkdtemp())
+        temp_vercel = temp_dir / ".vercel"
+        shutil.copytree(saved_vercel, temp_vercel)
     if OUT.exists():
         shutil.rmtree(OUT)
     for src_rel, dst_rel in COPY.items():
@@ -55,6 +63,9 @@ def main() -> None:
             shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.onnx", "tokenizer.json"))
         else:
             shutil.copy2(src, dst)
+    if temp_vercel and temp_vercel.exists():
+        shutil.copytree(temp_vercel, OUT / ".vercel")
+        shutil.rmtree(temp_vercel.parent)
     (OUT / "README.md").write_text(README, encoding="utf-8")
     files = [f for f in OUT.rglob("*") if f.is_file()]
     print(f"Built {OUT} ({len(files)} files, {sum(f.stat().st_size for f in files) / 1e6:.1f} MB)")

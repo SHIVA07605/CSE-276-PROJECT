@@ -40,7 +40,7 @@
       "threshold": 0.6526314311219978,
       "roc_auc": 0.9994841714598897,
       "pr_auc": 0.9997114691675518,
-      "train_seconds": 0.16
+      "train_seconds": 0.09
     },
     {
       "model": "random_forest",
@@ -56,7 +56,7 @@
       "threshold": 0.7741815853529066,
       "roc_auc": 0.9995695107404226,
       "pr_auc": 0.9997561037660794,
-      "train_seconds": 1.45
+      "train_seconds": 0.96
     },
     {
       "model": "hist_gradient_boosting",
@@ -72,7 +72,7 @@
       "threshold": 0.8052094309174332,
       "roc_auc": 0.9997819107275268,
       "pr_auc": 0.9998762988011825,
-      "train_seconds": 5.79
+      "train_seconds": 2.59
     }
   ],
   "synthetic_test": [
@@ -323,5 +323,5 @@
     "blocked_merges": 50,
     "transitive_conflicts": 50
   },
-  "runtime_seconds": 241.3
+  "runtime_seconds": 136.1
 }
