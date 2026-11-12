@@ -47,6 +47,38 @@ python -m pytest                    # full test suite
 | Next pairs to label (active learning) | `results/metrics/batch2_review_priority.csv` |
 | Source | `src/synthetic_pairs.py`, `src/pair_features.py`, `src/model.py`, `src/er_pipeline.py` |
 
+### 🌐 Use the model in a browser: Material Match web app
+
+```bash
+python web_app.py               # opens http://localhost:8060  (Windows: double-click start_website.bat)
+python web_app.py --port 9000   # another port · --no-browser to skip opening a tab
+```
+
+| Tab | What it does |
+|---|---|
+| **Compare two materials** | Paste two descriptions → `EQUIVALENT` / `NOT_EQUIVALENT` / `NEEDS_REVIEW`, match probability on the decision scale, extracted specifications (shared = green, conflicting = red) and similarity evidence |
+| **Search catalogue** | Type a new description → closest records among all 6,634, grouped into *same item*, *needs review* and *similar but different*, with an IOCL / OIL / NTPC filter |
+| **Harmonised clusters** | Browse the proposed harmonised codes from `results/matching/harmonised_master_model.csv` |
+| **Model card** | All metrics, read live from `results/metrics/er_model_metrics.json` |
+
+Shareable links: `http://localhost:8060/?a=GATE VALVE 4 INCH CLASS 150&b=GATE VALVE 4 INCH CLASS 300` (compare) and
+`http://localhost:8060/?q=API 6D ball valve` (search). The app runs locally, needs no extra packages and is **read-only**:
+it never writes to label, worksheet or results files (checked by `tests/test_web_app.py`).
+
+**Live on Vercel.** `vercel-app/` is a self-contained Vercel project (Root Directory = `vercel-app`): the page is
+served statically and `api/index.py` runs the same trained model. PyTorch does not fit Vercel's 500 MB function limit,
+so MiniLM runs in pure numpy (`deploy/vercel/minilm_numpy.py`), verified against sentence-transformers on all 5,277
+catalogue texts (identical token ids, minimum cosine 0.9999999); the bundle is ~434 MB. After retraining:
+
+```bash
+python deploy/vercel/export_minilm_numpy.py   # only needed once (or when the embedding model changes)
+python deploy/vercel/build_vercel_app.py      # refresh vercel-app/ from the current model, then commit + push
+```
+
+Alternative host: `python deploy/build_hf_space.py --push YOUR_HF_USERNAME/material-match` (Hugging Face Spaces, Docker,
+full PyTorch). Both deployments ship only the app, `src/`, the trained model, cached embeddings, the public catalogue and
+the metrics/cluster outputs: no labels, worksheets, raw data, backups or `.env`.
+
 ---
 
 ## 1. Project Overview

@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Match</title>
+<style>
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --surface-2: #f1f3f6; --border: #dde1e7;
+  --text: #17202b; --muted: #5b6573; --accent: #1f5fae; --accent-ink: #ffffff; --accent-soft: #e6eef9;
+  --eq: #17784a; --eq-soft: #e3f4ea; --neq: #b4352a; --neq-soft: #fbe8e6; --rev: #9a6400; --rev-soft: #fdf1d9;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+  --radius: 10px; --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141a; --surface: #161d25; --surface-2: #1d2630; --border: #2b3643;
+    --text: #e6ebf1; --muted: #9aa6b4; --accent: #6aa5f0; --accent-ink: #0d1520; --accent-soft: #1b2a3d;
+    --eq: #4cc58a; --eq-soft: #14301f; --neq: #f0786b; --neq-soft: #3a1b18; --rev: #e9b44c; --rev-soft: #382a10;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141a; --surface: #161d25; --surface-2: #1d2630; --border: #2b3643;
+  --text: #e6ebf1; --muted: #9aa6b4; --accent: #6aa5f0; --accent-ink: #0d1520; --accent-soft: #1b2a3d;
+  --eq: #4cc58a; --eq-soft: #14301f; --neq: #f0786b; --neq-soft: #3a1b18; --rev: #e9b44c; --rev-soft: #382a10;
+  --shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+header { background: var(--surface); border-bottom: 1px solid var(--border); }
+.head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0 10px; flex-wrap: wrap; }
+.brand h1 { font-size: 20px; margin: 0; letter-spacing: -.01em; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.status { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.dot.ok { background: var(--eq); } .dot.err { background: var(--neq); }
+.theme-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-size: 12px; }
+nav { display: flex; gap: 2px; overflow-x: auto; }
+nav button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; font: inherit; font-weight: 550; color: var(--muted); cursor: pointer; white-space: nowrap; }
+nav button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav button:hover { color: var(--text); }
+main.wrap { padding-top: 26px; padding-bottom: 48px; }
+section[role="tabpanel"][hidden] { display: none; }
+.intro { color: var(--muted); margin: 0 0 16px; max-width: 760px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+label.field { display: block; font-weight: 600; font-size: 13px; color: var(--muted); }
+textarea, input[type="text"], select {
+  width: 100%; margin-top: 6px; font: inherit; color: var(--text); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+}
+textarea { min-height: 86px; resize: vertical; font-family: var(--mono); font-size: 13.5px; }
+textarea:focus, input:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.actions { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.btn { font: inherit; font-weight: 600; border-radius: 8px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.hint { color: var(--muted); font-size: 12.5px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+.chips .lbl { font-size: 12.5px; color: var(--muted); margin-right: 2px; }
+.chip { font: inherit; font-size: 12.5px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.chip:hover { border-color: var(--accent); }
+.result { margin-top: 18px; }
+.verdict { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.badge { display: inline-block; font-weight: 700; font-size: 12px; letter-spacing: .04em; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
+.badge.EQUIVALENT { background: var(--eq-soft); color: var(--eq); }
+.badge.NOT_EQUIVALENT { background: var(--neq-soft); color: var(--neq); }
+.badge.NEEDS_REVIEW { background: var(--rev-soft); color: var(--rev); }
+.badge.big { font-size: 15px; padding: 7px 14px; }
+.prob { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.prob small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 4px; }
+.reason { margin: 12px 0 0; }
+.policy { margin-top: 18px; }
+.bar { position: relative; height: 14px; border-radius: 7px; display: flex; overflow: hidden; border: 1px solid var(--border); }
+.bar span { height: 100%; }
+.z-neq, .z-rev, .z-eq { opacity: .45; }
+.z-neq { background: var(--neq); } .z-rev { background: var(--rev); } .z-eq { background: var(--eq); }
+.marker { position: absolute; top: -5px; width: 3px; height: 24px; background: var(--text); border-radius: 2px; transform: translateX(-1px); }
+.ticks { position: relative; height: 18px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ticks span { position: absolute; transform: translateX(-50%); top: 3px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--border); }
+h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 0 10px; }
+.sim-row { display: grid; grid-template-columns: minmax(150px, 220px) 1fr 52px; gap: 10px; align-items: center; font-size: 13.5px; padding: 3px 0; }
+.sim-track { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.sim-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.signals { display: flex; flex-wrap: wrap; gap: 8px; }
+.signal { font-size: 13px; border-radius: 6px; padding: 4px 10px; border: 1px solid var(--border); background: var(--surface-2); }
+.signal.bad { background: var(--neq-soft); color: var(--neq); border-color: transparent; font-weight: 600; }
+.signal.good { background: var(--eq-soft); color: var(--eq); border-color: transparent; }
+.signal.warn { background: var(--rev-soft); color: var(--rev); border-color: transparent; }
+.specs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .specs { grid-template-columns: 1fr; } }
+.spec-side { background: var(--surface-2); border-radius: 8px; padding: 12px; min-width: 0; }
+.spec-side .norm { font-family: var(--mono); font-size: 12.5px; word-break: break-word; margin-bottom: 8px; }
+.tag { display: inline-block; font-family: var(--mono); font-size: 12px; padding: 2px 7px; border-radius: 5px; margin: 0 6px 6px 0; background: var(--surface); border: 1px solid var(--border); }
+.tag.match { background: var(--eq-soft); color: var(--eq); border-color: transparent; }
+.tag.conflict { background: var(--neq-soft); color: var(--neq); border-color: transparent; font-weight: 700; }
+.empty { color: var(--muted); font-size: 13px; font-style: italic; }
+.searchbar { display: grid; grid-template-columns: 1fr 140px 110px auto; gap: 10px; align-items: end; }
+@media (max-width: 720px) { .searchbar { grid-template-columns: 1fr 1fr; } .searchbar .grow { grid-column: 1 / -1; } }
+.summary { color: var(--muted); font-size: 13.5px; margin: 18px 0 4px; }
+.group-h { display: flex; align-items: baseline; gap: 4px 8px; margin: 22px 0 8px; flex-wrap: wrap; }
+.group-h h2 { font-size: 15px; margin: 0; }
+.group-h span { color: var(--muted); font-size: 13px; }
+.hit { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; display: grid; grid-template-columns: 112px 1fr auto; gap: 12px; align-items: start; }
+@media (max-width: 720px) { .hit { grid-template-columns: 1fr; } }
+.hit .desc { font-family: var(--mono); font-size: 13px; word-break: break-word; }
+.hit .meta { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+.hit .p { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 6px; }
+.org { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); margin-right: 4px; }
+details summary { cursor: pointer; color: var(--accent); font-size: 12.5px; }
+.ids { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 4px; word-break: break-word; }
+.filters { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.filters input[type="text"] { max-width: 420px; margin-top: 0; }
+.cluster { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; }
+.cluster .top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.cluster code { font-family: var(--mono); font-weight: 700; font-size: 13px; }
+.cluster ul { margin: 8px 0 0; padding-left: 18px; font-family: var(--mono); font-size: 12.5px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+.kpi .v { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kpi .k { color: var(--muted); font-size: 12.5px; }
+.kpi .s { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; background: var(--surface); }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+th { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.sel td { background: var(--accent-soft); font-weight: 600; }
+.note { border-left: 3px solid var(--rev); background: var(--rev-soft); padding: 10px 14px; border-radius: 6px; font-size: 13.5px; margin-top: 14px; }
+.err { border-left: 3px solid var(--neq); background: var(--neq-soft); color: var(--neq); padding: 10px 14px; border-radius: 6px; margin-top: 14px; }
+.loading { color: var(--muted); margin-top: 16px; }
+footer.wrap { color: var(--muted); font-size: 12px; padding-top: 16px; padding-bottom: 28px; border-top: 1px solid var(--border); }
+@media (max-width: 520px) { .sim-row { grid-template-columns: 118px 1fr 46px; font-size: 12.5px; } .prob { font-size: 26px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="head">
+      <div class="brand">
+        <h1>Material Match</h1>
+        <p>Hybrid entity-resolution model for material master data: IOCL · OIL · NTPC (CSE 276 CA-1)</p>
+      </div>
+      <div class="status"><span class="dot" id="dot"></span><span id="status">Connecting to model…</span>
+        <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle colour theme">Theme</button></div>
+    </div>
+    <nav role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-compare" aria-controls="p-compare" aria-selected="true">Compare two materials</button>
+      <button role="tab" id="tab-search" aria-controls="p-search" aria-selected="false">Search catalogue</button>
+      <button role="tab" id="tab-clusters" aria-controls="p-clusters" aria-selected="false">Harmonised clusters</button>
+      <button role="tab" id="tab-model" aria-controls="p-model" aria-selected="false">Model card</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ============================== COMPARE ============================== -->
+  <section role="tabpanel" id="p-compare" aria-labelledby="tab-compare">
+    <p class="intro">Paste two material descriptions. The model decides whether they are the <b>same item</b>,
+      <b>different items</b>, or need a <b>human review</b>, and shows the evidence behind the decision.</p>
+    <div class="card">
+      <div class="grid2">
+        <label class="field">Material A<textarea id="a" spellcheck="false" placeholder="e.g. BALL VALVE 2 INCH CLASS 150 API 6D"></textarea></label>
+        <label class="field">Material B<textarea id="b" spellcheck="false" placeholder='e.g. BALL VALVE, 2", 150#, API-6D'></textarea></label>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="cmpBtn" type="button">Compare</button>
+        <button class="btn" id="swapBtn" type="button">Swap</button>
+        <button class="btn" id="clearBtn" type="button">Clear</button>
+        <span class="hint">Ctrl + Enter to compare</span>
+      </div>
+      <div class="chips" id="cmpExamples"><span class="lbl">Try:</span></div>
+    </div>
+    <div id="cmpOut" class="result" aria-live="polite"></div>
+  </section>
+
+  <!-- ============================== SEARCH =============================== -->
+  <section role="tabpanel" id="p-search" aria-labelledby="tab-search" hidden>
+    <p class="intro">Type a new material description. The model scores it against the closest records in the
+      6,634-record catalogue and groups them into matches, records needing review, and similar-but-different items.</p>
+    <div class="card">
+      <div class="searchbar">
+        <label class="field grow">Material description<input type="text" id="q" spellcheck="false" placeholder="e.g. API 6D ball valve"></label>
+        <label class="field">Enterprise<select id="org"><option value="">All</option><option>IOCL</option><option>OIL</option><option>NTPC</option></select></label>
+        <label class="field">Show<select id="topk"><option value="10">10</option><option value="20" selected>20</option><option value="50">50</option></select></label>
+        <button class="btn primary" id="searchBtn" type="button">Search</button>
+      </div>
+      <div class="chips" id="searchExamples"><span class="lbl">Try:</span></div>
+    </div>
+    <div id="searchOut" aria-live="polite"></div>
+  </section>
+
+  <!-- ============================== CLUSTERS ============================= -->
+  <section role="tabpanel" id="p-clusters" aria-labelledby="tab-clusters" hidden>
+    <p class="intro">Proposed harmonised codes produced by running the model over all real candidate pairs and grouping
+      equivalent records with conflict-aware clustering. Every cluster is a <b>proposal</b> for human approval.</p>
+    <div class="card filters">
+      <input type="text" id="cq" placeholder="Filter by description or code, e.g. valve" aria-label="Filter clusters">
+      <label class="hint"><input type="checkbox" id="cross"> Cross-enterprise only</label>
+    </div>
+    <div id="clOut" aria-live="polite"></div>
+  </section>
+
+  <!-- ============================== MODEL CARD =========================== -->
+  <section role="tabpanel" id="p-model" aria-labelledby="tab-model" hidden>
+    <div id="mcOut"><p class="loading">Loading metrics…</p></div>
+  </section>
+</main>
+
+<footer class="wrap" id="foot">Runs locally on this computer. Read-only: no data, label or results file is modified.</footer>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const f3 = (x) => (x == null || isNaN(x) ? "–" : Number(x).toFixed(3));
+const pct = (x, d = 1) => (x == null || isNaN(x) ? "–" : (100 * x).toFixed(d) + "%");
+const int = (x) => (x == null ? "–" : Number(x).toLocaleString("en-IN"));
+const LABEL = { EQUIVALENT: "EQUIVALENT", NOT_EQUIVALENT: "NOT EQUIVALENT", NEEDS_REVIEW: "NEEDS REVIEW" };
+const badge = (d, big) => `<span class="badge ${esc(d)}${big ? " big" : ""}">${esc(LABEL[d] || d)}</span>`;
+let thresholds = { low: 0.25, high: 0.85, binary: 0.805 };
+
+async function api(path, body) {
+  const opts = body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {};
+  const r = await fetch(path, opts);
+  let data = {};
+  try { data = await r.json(); } catch (e) { /* non-JSON */ }
+  if (!r.ok) throw new Error(data.error || `Request failed (${r.status})`);
+  return data;
+}
+const errBox = (e) => `<div class="err">${esc(e.message || e)}</div>`;
+
+/* ------------------------------------------------------------------ theme */
+(function () {
+  let t = null;
+  try { t = localStorage.getItem("mm-theme"); } catch (e) {}
+  if (t) document.documentElement.dataset.theme = t;
+  $("themeBtn").onclick = () => {
+    const dark = document.documentElement.dataset.theme
+      ? document.documentElement.dataset.theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("mm-theme", next); } catch (e) {}
+  };
+})();
+
+/* ------------------------------------------------------------------ tabs */
+const tabs = ["compare", "search", "clusters", "model"];
+const loaded = {};
+function showTab(name) {
+  for (const t of tabs) {
+    $("tab-" + t).setAttribute("aria-selected", String(t === name));
+    $("p-" + t).hidden = t !== name;
+  }
+  try { history.replaceState(null, "", "#" + name); } catch (e) {}
+  if (name === "clusters" && !loaded.clusters) { loaded.clusters = true; loadClusters(); }
+  if (name === "model" && !loaded.model) { loaded.model = true; loadModelCard(); }
+  if (name === "search") $("q").focus();
+}
+for (const t of tabs) $("tab-" + t).onclick = () => showTab(t);
+
+/* ------------------------------------------------------------------ status */
+api("/api/health").then((h) => {
+  thresholds = h.thresholds || thresholds;
+  $("dot").className = "dot ok";
+  $("status").textContent = `Model ready · ${h.classifier || "classifier"} · ${int(h.catalogue_records)} records`;
+  if (h.hosted) $("foot").textContent = "Public demo of the CSE 276 CA-1 hybrid entity-resolution model. Read-only: inputs are scored in memory and not stored.";
+}).catch(() => { $("dot").className = "dot err"; $("status").textContent = "Model server not reachable"; });
+
+/* ------------------------------------------------------------------ compare */
+const CMP_EXAMPLES = [
+  ["Same valve, different packaging", "API 6D BALL VALVES (NUMBERS)", "API 6D BALL VALVES QUANTITY 76 NUMBERS"],
+  ["Format variant", "BALL VALVE 2 INCH CLASS 150 API 6D", 'BALL VALVE, 2", 150#, API-6D'],
+  ["Belt width conflict", "CONVEYOR BELT (NN / EP) ABOVE 1400MM WIDTH AND UPTO 1600MM WIDTH", "CONVEYOR BELT (NN/ EP) ABOVE 1800MM WIDTH AND UPTO 2000MM WIDTH"],
+  ["Pressure class conflict", "GATE VALVE 4 INCH CLASS 150 API 600", "GATE VALVE 4 INCH CLASS 300 API 600"],
+  ["Generic title", "AIR COMPRESSOR", "AIR COMPRESSOR"],
+  ["Different instruments", "AMC OF BELSORP HP INSTRUMENT", "AMC OF ED-XRF INSTRUMENT"],
+];
+for (const [label, a, b] of CMP_EXAMPLES) {
+  const c = document.createElement("button");
+  c.type = "button"; c.className = "chip"; c.textContent = label;
+  c.onclick = () => { $("a").value = a; $("b").value = b; runCompare(); };
+  $("cmpExamples").appendChild(c);
+}
+$("cmpBtn").onclick = runCompare;
+$("swapBtn").onclick = () => { const t = $("a").value; $("a").value = $("b").value; $("b").value = t; };
+$("clearBtn").onclick = () => { $("a").value = ""; $("b").value = ""; $("cmpOut").innerHTML = ""; $("a").focus(); };
+for (const id of ["a", "b"]) $(id).addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) runCompare(); });
+
+async function runCompare() {
+  const a = $("a").value.trim(), b = $("b").value.trim();
+  if (!a || !b) { $("cmpOut").innerHTML = errBox("Enter both material descriptions."); return; }
+  $("cmpBtn").disabled = true;
+  $("cmpOut").innerHTML = `<p class="loading">Scoring…</p>`;
+  try { renderCompare(await api("/api/compare", { a, b })); }
+  catch (e) { $("cmpOut").innerHTML = errBox(e); }
+  finally { $("cmpBtn").disabled = false; }
+}
+
+function policyBar(p, t) {
+  const lo = t.low * 100, hi = t.high * 100;
+  return `<div class="policy">
+    <div class="bar" role="img" aria-label="Match probability ${f3(p)} on the decision scale">
+      <span class="z-neq" style="width:${lo}%"></span><span class="z-rev" style="width:${hi - lo}%"></span><span class="z-eq" style="width:${100 - hi}%"></span>
+      <div class="marker" style="left:${Math.min(99.7, Math.max(0.3, p * 100))}%"></div>
+    </div>
+    <div class="ticks"><span style="left:0%;transform:none">0</span><span style="left:${lo}%">${t.low}</span><span style="left:${hi}%">${t.high}</span><span style="left:100%;transform:translateX(-100%)">1</span></div>
+    <div class="legend"><span><i class="z-neq"></i>Auto-reject</span><span><i class="z-rev"></i>Human review</span><span><i class="z-eq"></i>Auto-merge if specifications agree on both sides</span></div>
+  </div>`;
+}
+
+function specTags(side, other) {
+  // side/other: parse_specifications output. Colour keys shared by both: green = same, red = conflict.
+  const out = [];
+  const keyed = (obj, oth, fmt) => {
+    for (const k of Object.keys(obj || {})) {
+      const v = obj[k], ov = (oth || {})[k];
+      let cls = "";
+      if (ov) {
+        const same = JSON.stringify([...v].sort()) === JSON.stringify([...ov].sort());
+        const overlap = v.some((x) => ov.includes(x));
+        cls = same ? "match" : overlap ? "" : "conflict";
+      }
+      out.push(`<span class="tag ${cls}">${esc(fmt(k, v))}</span>`);
+    }
+  };
+  keyed(side.units, other.units, (k, v) => `${v.join("/")} ${k}`);
+  keyed(side.standards, other.standards, (k, v) => `${k} ${v.join("/")}`);
+  keyed(side.groups, other.groups, (k, v) => `${k.replace(/_/g, " ")}: ${v.join("/").replace(/_/g, " ")}`);
+  for (const [key, label] of [["grades", "grade"], ["bearings", "bearing"]]) {
+    const v = side[key] || [], ov = other[key] || [];
+    for (const x of v) {
+      const cls = ov.length ? (ov.includes(x) ? "match" : "conflict") : "";
+      out.push(`<span class="tag ${cls}">${esc(label + " " + x)}</span>`);
+    }
+  }
+  return out.length ? out.join("") : `<span class="empty">No size, rating, standard or grade found</span>`;
+}
+
+function humanReason(r) {
+  // "Explicit specification conflict: unit_spec_conflicts" -> readable labels
+  let text = r.reason || "";
+  for (const s of r.spec_counts || []) text = text.split(s.key).join(s.label.toLowerCase());
+  return text;
+}
+
+function renderCompare(r) {
+  const t = r.thresholds || thresholds;
+  const sims = r.similarity.map((s) => `<div class="sim-row"><span>${esc(s.label)}</span>
+      <div class="sim-track"><div class="sim-fill" style="width:${Math.max(0, Math.min(1, s.value)) * 100}%"></div></div>
+      <span class="num">${f3(s.value)}</span></div>`).join("");
+  const active = r.spec_counts.filter((s) => s.value > 0);
+  const sigs = active.length ? active.map((s) => {
+    const cls = s.hard_conflict ? "bad" : /match/.test(s.key) ? "good" : "warn";
+    return `<span class="signal ${cls}">${esc(s.label)}: ${s.value}</span>`;
+  }).join("") : `<span class="empty">No specification evidence on either side: generic titles are always sent to review.</span>`;
+  $("cmpOut").innerHTML = `<div class="card">
+    <div class="verdict">${badge(r.decision, true)}
+      <div class="prob">${f3(r.match_probability)}<small>match probability</small></div>
+      <div class="hint">Confidence: <b>${esc(r.confidence)}</b></div></div>
+    <p class="reason">${esc(humanReason(r))}</p>
+    ${policyBar(r.match_probability, t)}
+    <h3>Specifications found</h3>
+    <div class="specs">
+      <div class="spec-side"><div class="hint">A (normalised)</div><div class="norm">${esc(r.normalised_a)}</div>${specTags(r.specs_a, r.specs_b)}</div>
+      <div class="spec-side"><div class="hint">B (normalised)</div><div class="norm">${esc(r.normalised_b)}</div>${specTags(r.specs_b, r.specs_a)}</div>
+    </div>
+    <div class="legend" style="margin-top:8px"><span><i class="z-eq"></i>same on both</span><span><i class="z-neq"></i>conflict</span></div>
+    <h3>Specification signals</h3><div class="signals">${sigs}</div>
+    <h3>Text similarity</h3>${sims}
+  </div>`;
+}
+
+/* ------------------------------------------------------------------ search */
+const SEARCH_EXAMPLES = ["API 6D ball valve", "gate valve cast carbon steel", "hot plate magnetic stirrer", "XLPE cable 1.1 kV", "centrifugal pump", "deep groove ball bearing"];
+for (const q of SEARCH_EXAMPLES) {
+  const c = document.createElement("button");
+  c.type = "button"; c.className = "chip"; c.textContent = q;
+  c.onclick = () => { $("q").value = q; runSearch(); };
+  $("searchExamples").appendChild(c);
+}
+$("searchBtn").onclick = runSearch;
+$("q").addEventListener("keydown", (e) => { if (e.key === "Enter") runSearch(); });
+
+async function runSearch() {
+  const query = $("q").value.trim();
+  if (!query) { $("searchOut").innerHTML = errBox("Enter a material description to search for."); return; }
+  $("searchBtn").disabled = true;
+  $("searchOut").innerHTML = `<p class="loading">Searching 6,634 records…</p>`;
+  try { renderSearch(await api("/api/search", { query, organization: $("org").value, top_k: Number($("topk").value) }), query); }
+  catch (e) { $("searchOut").innerHTML = errBox(e); }
+  finally { $("searchBtn").disabled = false; }
+}
+
+function renderSearch(r, rawQuery) {
+  if (!r.results.length) { $("searchOut").innerHTML = `<p class="summary">No catalogue records found.</p>`; return; }
+  const c = r.decision_counts || {};
+  const groups = [
+    ["EQUIVALENT", "Same item", "the model would merge these"],
+    ["NEEDS_REVIEW", "Needs human review", "similar, but specifications are missing, one-sided or uncertain"],
+    ["NOT_EQUIVALENT", "Similar but different", "closest records the model rejects, ordered by semantic similarity"],
+  ];
+  let html = `<p class="summary">Normalised query <b>${esc(r.query)}</b> · scored ${int(r.shortlist_size)} shortlisted descriptions in ${r.seconds}s ·
+    ${c.EQUIVALENT || 0} equivalent, ${c.NEEDS_REVIEW || 0} need review, ${c.NOT_EQUIVALENT || 0} not equivalent</p>`;
+  for (const [d, title, sub] of groups) {
+    const hits = r.results.filter((x) => x.decision === d);
+    if (!hits.length) continue;
+    html += `<div class="group-h"><h2>${title}</h2><span>${hits.length} shown · ${sub}</span></div>`;
+    for (const h of hits) {
+      const ids = h.records.map((x) => `${x.corpus_id} (${x.organization})`).join(", ") + (h.record_count > h.records.length ? ` … +${h.record_count - h.records.length} more` : "");
+      html += `<div class="hit">
+        <div>${badge(h.decision)}<div class="p">${f3(h.match_probability)}</div><div class="hint">semantic ${f3(h.semantic_similarity)}</div></div>
+        <div><div class="desc">${esc(h.description)}</div>
+          <div class="meta">${h.organizations.map((o) => `<span class="org">${esc(o)}</span>`).join("")} ${h.record_count} record${h.record_count > 1 ? "s" : ""} · ${esc(h.reason)}</div>
+          <details><summary>Record IDs</summary><div class="ids">${esc(ids)}</div></details></div>
+        <div><button class="btn" type="button" data-b="${esc(h.description)}">Compare</button></div>
+      </div>`;
+    }
+  }
+  $("searchOut").innerHTML = html;
+  for (const btn of $("searchOut").querySelectorAll("button[data-b]")) {
+    btn.onclick = () => { $("a").value = rawQuery; $("b").value = btn.dataset.b; showTab("compare"); runCompare(); window.scrollTo(0, 0); };
+  }
+}
+
+/* ------------------------------------------------------------------ clusters */
+let clTimer = null;
+$("cq").addEventListener("input", () => { clearTimeout(clTimer); clTimer = setTimeout(loadClusters, 250); });
+$("cross").addEventListener("change", loadClusters);
+async function loadClusters() {
+  const params = new URLSearchParams({ q: $("cq").value.trim(), cross: $("cross").checked ? "1" : "", limit: "100" });
+  try {
+    const r = await api("/api/clusters?" + params);
+    if (!r.available) { $("clOut").innerHTML = `<div class="note">No harmonised master found. Run <code>python train_er_model.py</code>.</div>`; return; }
+    let html = `<p class="summary">${int(r.total)} proposed clusters (${int(r.cross_enterprise_total)} cross-enterprise) · ${int(r.matched)} match the filter${r.matched > r.rows.length ? `, first ${r.rows.length} shown` : ""}</p>`;
+    for (const c of r.rows) {
+      const descs = String(c.distinct_descriptions || "").split(" || ").filter(Boolean);
+      const ents = String(c.enterprises || "").split("; ").map((e) => ({ "Indian Oil Corporation Limited": "IOCL", "Oil India Limited": "OIL", "NTPC Limited": "NTPC" }[e] || e));
+      html += `<div class="cluster"><div class="top">
+          <div><code>${esc(c.harmonised_code)}</code> ${ents.map((e) => `<span class="org">${esc(e)}</span>`).join("")}</div>
+          <div class="hint">${int(c.member_count)} records · mean p ${f3(c.mean_match_probability)} · min p ${f3(c.min_match_probability)} · ${esc(c.review_status)}</div></div>
+        <ul>${descs.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
+        <details><summary>Member record IDs</summary><div class="ids">${esc(c.member_corpus_ids)}</div></details></div>`;
+    }
+    $("clOut").innerHTML = html;
+  } catch (e) { $("clOut").innerHTML = errBox(e); }
+}
+
+/* ------------------------------------------------------------------ model card */
+const MODEL_NAMES = {
+  logistic_regression: "Logistic Regression", random_forest: "Random Forest", hist_gradient_boosting: "Hist. Gradient Boosting",
+  exact_match_baseline: "Baseline: exact match", tfidf_threshold_baseline: "Baseline: TF-IDF threshold",
+  minilm_threshold_baseline: "Baseline: MiniLM threshold", rule_engine_baseline: "Baseline: rule engine",
+};
+function confusion(b) {
+  return `TP ${b.true_positives} · FP ${b.false_positives} · TN ${b.true_negatives} · FN ${b.false_negatives}`;
+}
+async function loadModelCard() {
+  try {
+    const m = await api("/api/model");
+    if (!m.available) { $("mcOut").innerHTML = `<div class="note">No metrics file found. Run <code>python train_er_model.py</code>.</div>`; return; }
+    const sel = m.selected_model, test = m.synthetic_test.find((r) => r.model === sel) || {};
+    const pol = m.synthetic_test_policy || {}, td = m.training_data || {}, g = m.gold || {}, b2 = m.ai_assisted_batch2, rc = m.real_candidates || {};
+    const pur = (m.synthetic_test_cluster_purity || {}).hybrid_model || {};
+    let html = `<p class="intro">Every number on this page is read live from <code>${esc(m.source)}</code> (model ${esc(m.model_version)}).</p>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Selected classifier</div><div class="v" style="font-size:18px">${esc(MODEL_NAMES[sel] || sel)}</div><div class="s">chosen by validation PR-AUC</div></div>
+      <div class="kpi"><div class="k">Training pairs (self-supervised)</div><div class="v">${int(td.total_pairs)}</div><div class="s">${int(td.positives)} positive · ${int(td.negatives)} negative · group leakage ${td.group_leakage}</div></div>
+      <div class="kpi"><div class="k">Held-out test F1 / PR-AUC</div><div class="v">${f3(test.f1)} / ${f3(test.pr_auc)}</div><div class="s">n = ${int(test.total_pairs)} constructed pairs</div></div>
+      <div class="kpi"><div class="k">Auto-merge precision (test policy)</div><div class="v">${pct(pol.auto_merge_precision)}</div><div class="s">${int(pol.auto_merge_count)} merged · review rate ${pct(pol.review_rate)}</div></div>
+      <div class="kpi"><div class="k">Cluster purity / inverse purity</div><div class="v">${f3(pur.purity)} / ${f3(pur.inverse_purity)}</div><div class="s">held-out synthetic entities</div></div>
+    </div>
+    <div class="note">Held-out test pairs are constructed from real records with labels known by construction (format rewrites = match,
+      single-specification changes = non-match). Test scores are therefore an <b>upper bound</b> on real-world accuracy.</div>
+    <h3>Held-out test: models vs baselines</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Model</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">PR-AUC</th></tr></thead><tbody>
+    ${m.synthetic_test.map((r) => `<tr class="${r.model === sel ? "sel" : ""}"><td>${esc(MODEL_NAMES[r.model] || r.model)}</td><td class="num">${f3(r.precision)}</td><td class="num">${f3(r.recall)}</td><td class="num">${f3(r.f1)}</td><td class="num">${r.pr_auc == null ? "–" : Number(r.pr_auc).toFixed(4)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <h3>Three-way decision policy</h3>
+    <p>Auto-reject if p ≤ <b>${m.thresholds.low}</b> or any hard specification conflict · auto-merge if p ≥ <b>${m.thresholds.high}</b>
+      and specifications are stated and agree on both records · everything else goes to human review.
+      On the held-out test this auto-merges ${int(pol.auto_merge_count)} pairs at ${pct(pol.auto_merge_precision)} precision,
+      auto-rejects ${int(pol.auto_reject_count)} at ${pct(pol.auto_reject_npv)} NPV and sends ${int(pol.review_count)} (${pct(pol.review_rate)}) to review.</p>
+    <h3>Review-set labels (AI-assisted, not independent human ground truth)</h3>
+    <div class="tbl-wrap"><table><tbody>
+      <tr><td>Binary labelled pairs</td><td class="num">${g.n_binary} (${g.n_positive} positive, ${g.n_negative} negative)</td></tr>
+      ${g.selected_model_binary ? `<tr><td>Selected model at binary threshold</td><td class="num">${confusion(g.selected_model_binary)}</td></tr>
+      <tr><td>Precision · recall (95% Wilson CI)</td><td class="num">${f3(g.selected_model_binary.precision)} ${esc(g.selected_model_binary.precision_95ci || "")} · ${f3(g.selected_model_binary.recall)} ${esc(g.selected_model_binary.recall_95ci || "")}</td></tr>` : ""}
+      <tr><td>UNCERTAIN pairs the model auto-merged</td><td class="num">${g.uncertain_pairs_auto_merged} of ${g.n_uncertain}</td></tr>
+      <tr><td>Pending (unlabelled) pairs</td><td class="num">${g.n_pending}</td></tr>
+    </tbody></table></div>
+    <div class="note">With only ${g.n_positive} positive pairs the confidence intervals are very wide; these are sanity checks, not accuracy claims.</div>`;
+    if (b2) {
+      html += `<h3>AI-assisted Batch-2 tier</h3>
+      <div class="tbl-wrap"><table><tbody>
+        <tr><td>Binary pairs</td><td class="num">${b2.n_binary} (${b2.n_positive} positive, ${b2.n_negative} negative) of ${b2.n_pairs}</td></tr>
+        ${b2.selected_model_binary ? `<tr><td>Selected model at binary threshold</td><td class="num">${confusion(b2.selected_model_binary)}</td></tr>` : ""}
+        <tr><td>UNCERTAIN pairs auto-merged</td><td class="num">${b2.uncertain_pairs_auto_merged} of ${b2.n_uncertain}</td></tr>
+      </tbody></table></div>
+      ${b2.note ? `<div class="note">${esc(b2.note)}</div>` : ""}`;
+    }
+    const dec = rc.decisions || {}, xdec = rc.cross_enterprise_decisions || {};
+    html += `<h3>All real candidate pairs scored</h3>
+      <div class="tbl-wrap"><table><thead><tr><th>Decision</th><th class="num">All pairs</th><th class="num">Cross-enterprise</th></tr></thead><tbody>
+      ${["EQUIVALENT", "NEEDS_REVIEW", "NOT_EQUIVALENT"].map((d) => `<tr><td>${badge(d)}</td><td class="num">${int(dec[d] || 0)}</td><td class="num">${int(xdec[d] || 0)}</td></tr>`).join("")}
+      <tr><td><b>Total</b></td><td class="num"><b>${int(rc.n_pairs)}</b></td><td class="num"></td></tr></tbody></table></div>
+      <p class="hint">${int(rc.multi_record_clusters)} multi-record clusters covering ${int(rc.records_in_clusters)} records · ${int(rc.blocked_merges)} merges blocked by the conflict-aware clustering.</p>`;
+    $("mcOut").innerHTML = html;
+  } catch (e) { $("mcOut").innerHTML = errBox(e); }
+}
+
+/* ------------------------------------------------------------------ start */
+// Shareable links: ?a=...&b=...  (compare)  ·  ?q=...&org=OIL  (search)  ·  #clusters / #model
+const qs = new URLSearchParams(location.search);
+const start = (location.hash || "").slice(1);
+if (qs.get("a") && qs.get("b")) {
+  $("a").value = qs.get("a"); $("b").value = qs.get("b");
+  showTab("compare"); runCompare();
+} else if (qs.get("q")) {
+  $("q").value = qs.get("q");
+  if (["IOCL", "OIL", "NTPC"].includes(qs.get("org"))) $("org").value = qs.get("org");
+  showTab("search"); runSearch();
+} else {
+  showTab(tabs.includes(start) ? start : "compare");
+}
+</script>
+</body>
+</html>

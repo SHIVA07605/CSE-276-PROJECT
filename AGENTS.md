@@ -15,6 +15,9 @@
 - **Rebuild and execute notebooks 05 & 07:** `python generate_model_notebooks.py`
 - **Regenerate documentation & README table:** `python generate_model_report.py`
 - **Run test suite:** `python -m pytest`
+- **Model website (read-only, http://localhost:8060):** `python web_app.py` (`web/index.html` is the page; tests in `tests/test_web_app.py`)
+- **Vercel deployment:** `python deploy/vercel/build_vercel_app.py` regenerates `vercel-app/` (Vercel Root Directory). MiniLM runs in pure numpy there (no PyTorch, 500 MB cap); re-run after retraining.
+- **Alternative host (Hugging Face Space, Docker):** `python deploy/build_hf_space.py [--push USER/SPACE]`.
 
 ## Key Artefacts Produced
 - `models/hybrid_er_model.joblib`: Trained model (classifier + TF-IDF + decision thresholds + metadata).
