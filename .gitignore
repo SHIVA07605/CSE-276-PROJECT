@@ -98,3 +98,8 @@ htmlcov/
 Thumbs.db
 Desktop.ini
 *.log
+
+# Vercel deployment: exported MiniLM weights live once, inside vercel-app/ (regenerate with deploy/vercel/export_minilm_numpy.py)
+deploy/vercel/minilm/
+!vercel-app/
+!vercel-app/**

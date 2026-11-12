@@ -187,7 +187,11 @@ Open browser to `http://localhost:8050`.
 **Live actions:**
 1. Open `notebooks/05_pairwise_classification.ipynb` → Section B (training-pair examples) and Section E (precision–recall curve vs baselines).
 2. Open `notebooks/07_model_evaluation.ipynb` → Section 2 (review-set labels) and Section 3 (cluster purity).
-3. Score any two descriptions live:
+3. **Website (recommended):** run `python web_app.py` (or double-click `start_website.bat`) → http://localhost:8060.
+   Click the example chips *Format variant* (→ EQUIVALENT), *Pressure class conflict* (→ NOT EQUIVALENT, CLASS 150 vs 300 shown in red)
+   and *Generic title* (→ NEEDS REVIEW); then on **Search catalogue** try "API 6D ball valve" to show IOCL and OIL records the model would merge.
+   The **Model card** tab shows every metric read live from `results/metrics/er_model_metrics.json`.
+4. Or score any two descriptions from the terminal:
    ```bash
    python -c "from src.er_pipeline import match_descriptions as m; print(m('CENTRIFUGAL PUMP API 610 60 M3/HR', 'PUMP-CENTRIFUGAL, API 610, 60 M3/HR'))"
    python -c "from src.er_pipeline import match_descriptions as m; print(m('GATE VALVE SS304 2INCH CLASS 150', 'GATE VALVE SS316 2INCH CLASS 150'))"
